@@ -32,18 +32,13 @@ def scroll_down_page(driver, timeout):
         last_height = new_height
 
 def fetch_conversation_from_link(link):
-
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     driver.get(link)
 
     try:
-
         scroll_down_page(driver, 10)
-
-
         page_source = driver.page_source
         driver.quit()
-
 
         soup = BeautifulSoup(page_source, 'html.parser')
 
@@ -66,12 +61,17 @@ def fetch_conversation_from_link(link):
                     'content': content_tag.get_text(strip=True)
                 })
 
+
+        for entry in conversation_data:
+            print(f"Author: {entry['author']}, Content: {entry['content'][:500]}")  
+
         return conversation_data
 
     except Exception as e:
         print(f"대화 내용을 가져오는 중 오류가 발생했습니다: {e}")
         driver.quit()
         return None
+
 
 def transform_conversation_to_text(conversation_data):
     """
