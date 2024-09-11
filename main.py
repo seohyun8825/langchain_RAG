@@ -15,7 +15,7 @@ def export_and_store_conversation(conversation_link):
 
 
 if __name__ == "__main__":
-    link = "https://chatgpt.com/share/68e6ee7c-23ee-4527-bf3d-7d4d4f4e98f8" 
+    link = "https://chatgpt.com/share/657832e7-1c82-4aac-8ee3-75a55188c26c" 
 
     vectorstore = export_and_store_conversation(link)
 

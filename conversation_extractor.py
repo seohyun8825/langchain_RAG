@@ -3,19 +3,11 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import pyperclip
-
-# 줄바꿈 문자 표준화 함수
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
-from bs4 import BeautifulSoup
-import pyperclip
+import time
 
 def standardize_line_breaks(text):
     return text.replace('\r\n', '\n').replace('\r', '\n')
@@ -24,6 +16,20 @@ def copy_to_clipboard(text):
     pyperclip.copy(text)
     print("대화 내용을 클립보드에 복사했습니다.")
 
+def scroll_down_page(driver, timeout):
+    """조금이따가 """
+    scroll_pause_time = 2
+    last_height = driver.execute_script("return document.body.scrollHeight")
+
+    while True:
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+        time.sleep(scroll_pause_time)
+
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            break
+        last_height = new_height
 
 def fetch_conversation_from_link(link):
 
@@ -32,10 +38,7 @@ def fetch_conversation_from_link(link):
 
     try:
 
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'article')))
-
-
-
+        scroll_down_page(driver, 10)
 
 
         page_source = driver.page_source
@@ -70,7 +73,6 @@ def fetch_conversation_from_link(link):
         driver.quit()
         return None
 
-
 def transform_conversation_to_text(conversation_data):
     """
     return: 변환된 텍스트
@@ -85,7 +87,6 @@ def transform_conversation_to_text(conversation_data):
     return "\n\n".join(output_text)
 
 def export_to_text(conversation_link):
-
     conversation_data = fetch_conversation_from_link(conversation_link)
     if conversation_data:
         text_output = transform_conversation_to_text(conversation_data)
@@ -93,7 +94,6 @@ def export_to_text(conversation_link):
         copy_to_clipboard(standardized_text)
     else:
         print("대화 내용을 변환하지 못했습니다.")
-
 
 if __name__ == "__main__":
     link = "https://chatgpt.com/share/68e6ee7c-23ee-4527-bf3d-7d4d4f4e98f8"  
